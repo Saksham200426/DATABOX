@@ -1,0 +1,702 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consumer Intelligence Platform | Investor Deck</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS (Utility Framework) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- GSAP for High-Performance Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Tailwind Config for Premium Branding -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#050505',
+                            border: 'rgba(255, 255, 255, 0.08)',
+                            neon: '#10B981', // Premium Stripe/Linear Green
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.06);
+        }
+
+        body, html {
+            background-color: #050505;
+            color: #FFFFFF;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10B981; }
+
+        .text-gradient {
+            background: linear-gradient(180deg, #FFFFFF 0%, #888888 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .text-gradient-neon {
+            background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            border-color: rgba(16, 185, 129, 0.3);
+            transform: translateY(-2px);
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 100px 5% 80px;
+            position: relative;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #10B981;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Modal & Toast CSS */
+        .invest-modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+        }
+        .invest-modal-content {
+            background: rgba(15, 15, 15, 0.65);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(16, 185, 129, 0.15);
+            padding: 40px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            transform: scale(0.8) translateY(30px);
+            opacity: 0;
+        }
+        .body-no-scroll {
+            overflow: hidden;
+        }
+        .success-toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 150;
+            background: rgba(16, 185, 129, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #10B981;
+            padding: 12px 24px;
+            border-radius: 100px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transform: translateX(150%);
+            opacity: 0;
+        }
+    </style>
+</head>
+<body class="selection:bg-brand-neon selection:text-black">
+
+    <canvas id="bg-canvas"></canvas>
+    
+    <!-- Ambient Glows -->
+    <div class="fixed top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-brand-neon rounded-full mix-blend-screen filter blur-[150px] opacity-10 pointer-events-none z-[-1]"></div>
+    <div class="fixed bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] bg-blue-600 rounded-full mix-blend-screen filter blur-[150px] opacity-10 pointer-events-none z-[-1]"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-[#050505]/80 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-3 h-3 rounded-full bg-brand-neon shadow-[0_0_10px_#10B981] animate-pulse"></div>
+            <span class="font-bold tracking-widest text-lg">DATABOX</span>
+        </div>
+        <div class="hidden md:flex gap-8 text-xs font-mono text-gray-400">
+            <a href="#problem" class="hover:text-white transition-colors">01. Problem</a>
+            <a href="#platform" class="hover:text-white transition-colors">02. Platform</a>
+            <a href="#dashboard" class="hover:text-white transition-colors">03. MIS</a>
+            <a href="#economics" class="hover:text-white transition-colors">04. Financials</a>
+        </div>
+        <button id="nav-invest-btn" class="glass-card px-6 py-2 text-sm font-medium rounded-full hover:bg-white hover:text-black transition-colors border-white/20 cursor-pointer">
+            Invest
+        </button>
+    </nav>
+
+    <main>
+        <!-- SLIDE 1: COVER -->
+        <section id="cover" class="slide items-center text-center">
+            <div class="max-w-5xl mx-auto gs-reveal">
+                <div class="chip mb-6">Confidential Pitch Deck</div>
+                <h1 class="text-6xl md:text-8xl font-bold tracking-tighter mb-6 leading-tight">
+                    The Future of <br>
+                    <span class="text-gradient-neon">Consumer Intelligence</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto mb-10">
+                    Turning physical unboxing dopamine into structured, verified market research for enterprise brands.
+                </p>
+                <div class="flex justify-center gap-4">
+                    <a href="#problem" class="bg-white text-black px-8 py-3 rounded-full font-semibold hover:bg-gray-200 transition-colors">Enter Platform</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: THE PROBLEM -->
+        <section id="problem" class="slide">
+            <div class="max-w-6xl mx-auto w-full">
+                <div class="mb-16 gs-reveal">
+                    <div class="chip mb-4">The Status Quo</div>
+                    <h2 class="text-4xl md:text-6xl font-bold text-gradient mb-4">Enterprise Research is Broken.</h2>
+                    <p class="text-gray-400 text-lg">Traditional methods are unscalable, expensive, and structurally flawed.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-8 rounded-3xl gs-reveal">
+                        <div class="text-5xl font-bold text-white mb-2">1-3%</div>
+                        <div class="text-xs font-mono text-brand-neon mb-4">CONVERSION RATE</div>
+                        <p class="text-gray-400 text-sm">Post-purchase email surveys are ignored. Brands launch products blind to mass user intent.</p>
+                    </div>
+                    <div class="glass-card p-8 rounded-3xl gs-reveal delay-100">
+                        <div class="text-5xl font-bold text-white mb-2">₹12,000</div>
+                        <div class="text-xs font-mono text-brand-neon mb-4">COST PER INSIGHT</div>
+                        <p class="text-gray-400 text-sm">Physical focus groups are geographically restricted and drain vast capital.</p>
+                    </div>
+                    <div class="glass-card p-8 rounded-3xl gs-reveal delay-200">
+                        <div class="text-5xl font-bold text-white mb-2">Zero</div>
+                        <div class="text-xs font-mono text-brand-neon mb-4">DEMOGRAPHIC CONTEXT</div>
+                        <p class="text-gray-400 text-sm">Standard e-commerce reviews are anonymous, stripping away cohort data.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: SOLUTION / PLATFORM -->
+        <section id="platform" class="slide">
+            <div class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="gs-reveal">
+                    <div class="chip mb-4">The Engine</div>
+                    <h2 class="text-4xl md:text-5xl font-bold text-gradient mb-6">Physical Distribution.<br>Digital Intelligence.</h2>
+                    <p class="text-gray-400 mb-8">A dual-sided marketplace. Consumers pay for premium mystery boxes. Brands pay for high-fidelity SaaS insights.</p>
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-full bg-brand-neon/20 text-brand-neon flex items-center justify-center font-bold shrink-0">1</div>
+                            <div>
+                                <h4 class="font-bold text-white">Self-Funded Acquisition</h4>
+                                <p class="text-sm text-gray-400">Users buy boxes (₹199 to ₹5L), providing demographic data natively.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-full bg-brand-neon/20 text-brand-neon flex items-center justify-center font-bold shrink-0">2</div>
+                            <div>
+                                <h4 class="font-bold text-white">QR Data Bridge</h4>
+                                <p class="text-sm text-gray-400">Physical scans gate instant cashback, driving 82% review completion.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-full bg-brand-neon/20 text-brand-neon flex items-center justify-center font-bold shrink-0">3</div>
+                            <div>
+                                <h4 class="font-bold text-white">AI Structuring</h4>
+                                <p class="text-sm text-gray-400">NLP pipelines structure sentiment into an enterprise B2B dashboard.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card h-[400px] rounded-[40px] flex items-center justify-center relative overflow-hidden gs-reveal">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-brand-neon/10 to-transparent"></div>
+                    <div class="w-48 h-48 border border-white/20 rounded-full animate-[spin_10s_linear_infinite] flex items-center justify-center relative">
+                        <div class="absolute -top-3 w-6 h-6 bg-brand-neon rounded-full shadow-[0_0_20px_#10B981]"></div>
+                        <div class="absolute -bottom-3 w-6 h-6 bg-blue-500 rounded-full shadow-[0_0_20px_#3B82F6]"></div>
+                        <div class="font-mono text-center text-xs tracking-widest text-white">
+                            DATA<br>FLYWHEEL
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: DASHBOARD (MIS REPORTING) -->
+        <section id="dashboard" class="slide">
+            <div class="max-w-6xl mx-auto w-full gs-reveal">
+                <div class="text-center mb-10">
+                    <div class="chip mb-4">Enterprise IP</div>
+                    <h2 class="text-4xl font-bold text-white mb-4">High-Fidelity MIS Dashboard</h2>
+                    <p class="text-gray-400 text-sm">Transforming raw user text into structured, audit-ready operational reports.</p>
+                </div>
+
+                <div class="glass-card rounded-2xl border border-white/10 overflow-hidden shadow-2xl bg-[#0A0A0A]/90">
+                    <div class="border-b border-white/10 p-4 flex justify-between items-center bg-black/50">
+                        <div class="flex gap-2"><div class="w-3 h-3 rounded-full bg-red-500"></div><div class="w-3 h-3 rounded-full bg-yellow-500"></div><div class="w-3 h-3 rounded-full bg-green-500"></div></div>
+                        <div class="text-xs font-mono text-gray-500">DATABOX_OS_v2.1 | MIS_REPORTING_MODULE</div>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="md:col-span-3 grid grid-cols-3 gap-4">
+                            <div class="bg-black border border-white/5 p-4 rounded-xl">
+                                <div class="text-[10px] font-mono text-gray-500">SENTIMENT SCORE</div>
+                                <div class="text-2xl font-bold text-brand-neon mt-1">94.2%</div>
+                            </div>
+                            <div class="bg-black border border-white/5 p-4 rounded-xl">
+                                <div class="text-[10px] font-mono text-gray-500">PURCHASE INTENT</div>
+                                <div class="text-2xl font-bold text-white mt-1">81.5%</div>
+                            </div>
+                            <div class="bg-black border border-white/5 p-4 rounded-xl">
+                                <div class="text-[10px] font-mono text-gray-500">COHORT VOLUME</div>
+                                <div class="text-2xl font-bold text-white mt-1">12,400</div>
+                            </div>
+                            <div class="col-span-3 bg-black border border-white/5 p-4 rounded-xl h-48 flex items-end gap-2">
+                                <div class="w-full bg-brand-neon/20 h-[40%] rounded-t-sm relative"><div class="absolute bottom-0 w-full bg-brand-neon rounded-t-sm h-full opacity-50"></div></div>
+                                <div class="w-full bg-brand-neon/20 h-[60%] rounded-t-sm relative"><div class="absolute bottom-0 w-full bg-brand-neon rounded-t-sm h-full opacity-60"></div></div>
+                                <div class="w-full bg-brand-neon/20 h-[30%] rounded-t-sm relative"><div class="absolute bottom-0 w-full bg-brand-neon rounded-t-sm h-full opacity-40"></div></div>
+                                <div class="w-full bg-brand-neon/20 h-[80%] rounded-t-sm relative"><div class="absolute bottom-0 w-full bg-brand-neon rounded-t-sm h-full opacity-80"></div></div>
+                                <div class="w-full bg-brand-neon/20 h-[100%] rounded-t-sm relative"><div class="absolute bottom-0 w-full bg-brand-neon rounded-t-sm h-full opacity-100 shadow-[0_0_15px_#10B981]"></div></div>
+                            </div>
+                        </div>
+                        <div class="bg-black border border-white/5 p-4 rounded-xl font-mono text-xs flex flex-col">
+                            <div class="text-brand-neon mb-4">LIVE AI TERMINAL</div>
+                            <div id="ai-text" class="text-gray-400 space-y-2 flex-1">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: UNIT ECONOMICS CALCULATOR -->
+        <section id="economics" class="slide">
+            <div class="max-w-6xl mx-auto w-full gs-reveal">
+                <div class="mb-10">
+                    <div class="chip mb-4">Financial Architecture</div>
+                    <h2 class="text-4xl font-bold text-gradient mb-2">Platform Unit Economics</h2>
+                    <p class="text-gray-400">B2C commerce fully subsidizes logistics. High-margin B2B SaaS drives valuation.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="glass-card p-8 rounded-3xl">
+                        <div class="text-xs font-mono text-gray-500 mb-6 uppercase">Simulation Parameters</div>
+                        
+                        <div class="mb-6">
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="text-gray-400">Monthly Boxes Sold</span>
+                                <span id="val-boxes" class="font-bold text-white">5,000</span>
+                            </div>
+                            <input type="range" id="slider-boxes" min="1000" max="25000" step="500" value="5000" class="w-full accent-brand-neon h-1 bg-white/10 appearance-none rounded-full cursor-pointer">
+                        </div>
+
+                        <div class="mb-6">
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="text-gray-400">Avg Box Price (B2C)</span>
+                                <span id="val-price" class="font-bold text-white">₹3,000</span>
+                            </div>
+                            <input type="range" id="slider-price" min="199" max="10000" step="100" value="3000" class="w-full accent-brand-neon h-1 bg-white/10 appearance-none rounded-full cursor-pointer">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="text-gray-400">Active Enterprise Brands</span>
+                                <span id="val-brands" class="font-bold text-white">10</span>
+                            </div>
+                            <input type="range" id="slider-brands" min="1" max="100" step="1" value="10" class="w-full accent-brand-neon h-1 bg-white/10 appearance-none rounded-full cursor-pointer">
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-8 rounded-3xl bg-black/60 flex flex-col justify-center">
+                        <div class="mb-6 border-b border-white/10 pb-6">
+                            <div class="text-xs font-mono text-gray-500 mb-1">B2C COMMERCE GROSS MARGIN (45%)</div>
+                            <div id="out-b2c" class="text-3xl font-bold text-white">₹6,750,000</div>
+                        </div>
+                        <div class="mb-6 border-b border-white/10 pb-6">
+                            <div class="text-xs font-mono text-gray-500 mb-1">B2B SAAS MRR (95% MARGIN)</div>
+                            <div id="out-b2b" class="text-3xl font-bold text-brand-neon">₹800,000</div>
+                        </div>
+                        <div>
+                            <div class="text-xs font-mono text-gray-500 mb-1">PROJECTED ANNUAL RUN RATE (ARR)</div>
+                            <div id="out-arr" class="text-5xl font-bold text-white tracking-tight">₹9.06 Cr</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: THE ASK & CLOSING -->
+        <section id="ask" class="slide items-center text-center">
+            <div class="max-w-4xl mx-auto gs-reveal">
+                <div class="text-brand-neon font-mono text-sm mb-6 uppercase tracking-widest">Capital Allocation</div>
+                <h2 class="text-6xl md:text-8xl font-bold tracking-tighter mb-6 text-white">
+                    ₹12.5 Cr Seed
+                </h2>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-12">
+                    Funding 18 months of operational runway to scale B2C distribution and deploy the V2 Enterprise MIS architecture.
+                </p>
+                <div class="grid grid-cols-3 gap-4 mb-12 text-sm font-mono text-gray-400">
+                    <div class="glass-card p-4 rounded-xl"><span class="text-white text-xl block mb-1">40%</span> AI Platform & Eng</div>
+                    <div class="glass-card p-4 rounded-xl"><span class="text-white text-xl block mb-1">40%</span> B2C Growth CAC</div>
+                    <div class="glass-card p-4 rounded-xl"><span class="text-white text-xl block mb-1">20%</span> 3PL Operations</div>
+                </div>
+                <button id="contact-founder-btn" class="bg-brand-neon text-black px-10 py-4 rounded-full font-bold hover:bg-white transition-colors uppercase tracking-widest text-sm cursor-pointer shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)]">
+                    Contact Founder
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Invest Modal -->
+    <div id="invest-modal-overlay" class="invest-modal-overlay">
+        <div id="invest-modal-content" class="invest-modal-content">
+            <div class="w-full flex justify-center mb-6 relative">
+                <!-- Neon back glow -->
+                <div class="absolute inset-0 bg-brand-neon rounded-full filter blur-[60px] opacity-20"></div>
+                <!-- QR Image Placeholder -->
+                <img src="assets/qr.JPEG" alt="UPI QR Code" class="w-48 h-48 object-cover rounded-2xl border border-white/10 shadow-lg relative z-10 bg-white p-2">
+            </div>
+            
+            <h3 class="text-2xl font-bold text-white mb-2 tracking-tight">Invest in Our Startup</h3>
+            <p class="text-gray-400 text-sm mb-6">Thank you for believing in our vision.</p>
+            
+            <div class="bg-black/50 border border-white/5 rounded-xl p-3 mb-8 flex items-center justify-between font-mono text-sm">
+                <span class="text-gray-300">sakshamrastogi4002@oksbi</span>
+                <button id="copy-upi-btn" class="text-brand-neon hover:text-white transition-colors p-2 flex items-center gap-1 cursor-pointer" title="Copy UPI ID">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                </button>
+            </div>
+            
+            <div class="flex flex-col gap-3">
+                <a href="upi://pay?pa=sakshamrastogi4002@oksbi&pn=Saksham&cu=INR" class="w-full bg-brand-neon text-black py-3 rounded-full font-bold hover:bg-white transition-colors flex items-center justify-center gap-2">
+                    Open UPI App
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+                <button id="close-modal-btn" class="w-full bg-transparent border border-white/20 text-white py-3 rounded-full font-medium hover:bg-white/5 transition-colors cursor-pointer">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Toast Notification -->
+    <div id="copy-toast" class="success-toast shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        UPI ID Copied Successfully
+    </div>
+
+    <script>
+        // --- 1. GSAP Scroll Animations ---
+        gsap.registerPlugin(ScrollTrigger);
+        
+        const revealElements = document.querySelectorAll('.gs-reveal');
+        revealElements.forEach((el) => {
+            gsap.fromTo(el, 
+                { autoAlpha: 0, y: 50 }, 
+                { 
+                    duration: 1, 
+                    autoAlpha: 1, 
+                    y: 0, 
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: el,
+                        start: "top 85%",
+                        toggleActions: "play none none reverse"
+                    }
+                }
+            );
+        });
+
+        // --- 2. Interactive Unit Economics Calculator ---
+        const sBoxes = document.getElementById('slider-boxes');
+        const sPrice = document.getElementById('slider-price');
+        const sBrands = document.getElementById('slider-brands');
+
+        const vBoxes = document.getElementById('val-boxes');
+        const vPrice = document.getElementById('val-price');
+        const vBrands = document.getElementById('val-brands');
+
+        const oB2C = document.getElementById('out-b2c');
+        const oB2B = document.getElementById('out-b2b');
+        const oARR = document.getElementById('out-arr');
+
+        const B2B_TIER_PRICE = 80000; // ₹80k/mo
+        const B2C_MARGIN_RATE = 0.45;
+
+        function updateFinancials() {
+            const boxes = parseInt(sBoxes.value);
+            const price = parseInt(sPrice.value);
+            const brands = parseInt(sBrands.value);
+
+            // Update UI Labels
+            vBoxes.innerText = boxes.toLocaleString('en-IN');
+            vPrice.innerText = '₹' + price.toLocaleString('en-IN');
+            vBrands.innerText = brands;
+
+            // Math
+            const b2cRev = boxes * price;
+            const b2cMargin = b2cRev * B2C_MARGIN_RATE;
+            const b2bMRR = brands * B2B_TIER_PRICE;
+            
+            const totalMonthly = b2cRev + b2bMRR;
+            const arrCr = (totalMonthly * 12) / 10000000;
+
+            // Output
+            oB2C.innerText = '₹' + Math.round(b2cMargin).toLocaleString('en-IN');
+            oB2B.innerText = '₹' + Math.round(b2bMRR).toLocaleString('en-IN');
+            oARR.innerText = '₹' + arrCr.toFixed(2) + ' Cr';
+        }
+
+        sBoxes.addEventListener('input', updateFinancials);
+        sPrice.addEventListener('input', updateFinancials);
+        sBrands.addEventListener('input', updateFinancials);
+        updateFinancials(); // Init
+
+        // --- 3. Simulated AI Terminal Typing ---
+        const aiLines = [
+            "> Initializing NLP Sentiment Engine...",
+            "> Parsing 1,204 fresh reviews from Gen-Z Cohort.",
+            "> [ALERT] Negative spike in 'texture' metric.",
+            "> Compiling MIS PDF report for Product Manager.",
+            "> Waiting for new scan data..."
+        ];
+        
+        let lineIdx = 0;
+        const aiTextContainer = document.getElementById('ai-text');
+        
+        setInterval(() => {
+            if(lineIdx >= aiLines.length) {
+                aiTextContainer.innerHTML = '';
+                lineIdx = 0;
+            }
+            const p = document.createElement('div');
+            p.className = lineIdx === 2 ? 'text-red-400' : 'text-brand-neon/80';
+            p.innerText = aiLines[lineIdx];
+            aiTextContainer.appendChild(p);
+            lineIdx++;
+        }, 2500);
+
+        // --- 4. High-Performance Particle Background ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2;
+                this.alpha = Math.random() * 0.5;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if(this.x < 0 || this.x > width) this.vx *= -1;
+                if(this.y < 0 || this.y > height) this.vy *= -1;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for(let i = 0; i < 150; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            
+            // Draw connections
+            ctx.lineWidth = 0.5;
+            for(let i=0; i<particles.length; i++) {
+                for(let j=i+1; j<particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if(dist < 100) {
+                        ctx.strokeStyle = `rgba(16, 185, 129, ${0.1 * (1 - dist/100)})`;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // --- 5. Invest Modal & WhatsApp Routing Logic ---
+        const modalOverlay = document.getElementById('invest-modal-overlay');
+        const modalContent = document.getElementById('invest-modal-content');
+        const navInvestBtn = document.getElementById('nav-invest-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const copyUpiBtn = document.getElementById('copy-upi-btn');
+        const copyToast = document.getElementById('copy-toast');
+        const contactFounderBtn = document.getElementById('contact-founder-btn');
+
+        let isModalOpen = false;
+
+        // Modal Open Animation (Scale + Elastic + Fade)
+        const openModal = () => {
+            isModalOpen = true;
+            document.body.classList.add('body-no-scroll');
+            modalOverlay.style.display = 'flex';
+            
+            gsap.to(modalOverlay, { duration: 0.3, opacity: 1, ease: "power2.out" });
+            gsap.to(modalContent, { 
+                duration: 0.6, 
+                opacity: 1, 
+                scale: 1, 
+                y: 0, 
+                ease: "elastic.out(1, 0.75)" 
+            });
+        };
+
+        // Modal Close Animation (Slide + Fade reverse)
+        const closeModal = () => {
+            if (!isModalOpen) return;
+            isModalOpen = false;
+            
+            gsap.to(modalContent, { 
+                duration: 0.3, 
+                opacity: 0, 
+                scale: 0.9, 
+                y: 20, 
+                ease: "power2.in" 
+            });
+            gsap.to(modalOverlay, { 
+                duration: 0.3, 
+                opacity: 0, 
+                ease: "power2.in",
+                onComplete: () => {
+                    modalOverlay.style.display = 'none';
+                    document.body.classList.remove('body-no-scroll');
+                }
+            });
+        };
+
+        navInvestBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal();
+        });
+
+        closeModalBtn?.addEventListener('click', closeModal);
+
+        // Close on clicking outside the modal
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        // Close on hitting ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isModalOpen) closeModal();
+        });
+
+        // Copy UPI Logic & Interactive GSAP Toast
+        let toastTimeout;
+        copyUpiBtn?.addEventListener('click', () => {
+            navigator.clipboard.writeText('sakshamrastogi4002@oksbi').then(() => {
+                // Animate toast sliding in
+                gsap.to(copyToast, { duration: 0.5, x: 0, opacity: 1, ease: "back.out(1.5)" });
+                
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => {
+                    // Auto disappear sliding out after 3 seconds
+                    gsap.to(copyToast, { duration: 0.4, x: '150%', opacity: 0, ease: "power2.in" });
+                }, 3000);
+            });
+        });
+
+        // WhatsApp Routing Engine
+        contactFounderBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            const phoneNumber = "917524987824";
+            const message = `Hello Saksham,\n\nI visited your Investor Presentation.\n\nI'm interested in learning more about your startup.\n\nI would like to discuss:\n• Investment Opportunity\n• Partnership\n• Business Collaboration\n\nPlease let me know a convenient time.\n\nThank you.`;
+            
+            // wa.me routing automatically detects devices and uses native App if present, fallback to Web otherwise
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        });
+    </script>
+</body>
+</html>
