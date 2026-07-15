@@ -570,7 +570,7 @@
         }
         animate();
 
-// --- Contact Founder (WhatsApp) ---
+// --- Contact Founder (Email) ---
 
 const navContactBtn = document.getElementById("nav-contact-btn");
 const contactFounderBtn = document.getElementById("contact-founder-btn");
@@ -578,29 +578,28 @@ const contactFounderBtn = document.getElementById("contact-founder-btn");
 function contactFounder(e) {
     if (e) e.preventDefault();
 
-    const phoneNumber = "917524987824";
+    const email = "databoxlabs@gmail.com";
 
-    const message = `Hello Saksham,
+    const subject = "Investment Inquiry - Databox";
 
-I visited your Databox website.
+    const body = `Hello Saksham,
+
+I visited your Databox Investor Presentation.
 
 I would like to discuss:
+
 • Investment Opportunity
 • Partnership
 • Business Collaboration
 
-Please let me know a convenient time.
+Please let me know a convenient time to connect.
 
-Thank you.`;
+Regards,
+`;
 
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-
-    window.open(whatsappUrl, "_blank");
+    window.location.href =
+        `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 navContactBtn?.addEventListener("click", contactFounder);
 contactFounderBtn?.addEventListener("click", contactFounder);
-
-</script>
-</body>
-</html>
