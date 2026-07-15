@@ -597,9 +597,15 @@ Please let me know a convenient time to connect.
 Regards,
 `;
 
-    window.location.href =
-        `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(
+    `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,
+    "_blank"
+);
 }
 
 navContactBtn?.addEventListener("click", contactFounder);
 contactFounderBtn?.addEventListener("click", contactFounder);
+
+</script>
+</body>
+</html>
