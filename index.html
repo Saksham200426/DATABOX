@@ -193,9 +193,9 @@
             <a href="#dashboard" class="hover:text-white transition-colors">03. MIS</a>
             <a href="#economics" class="hover:text-white transition-colors">04. Financials</a>
         </div>
-        <button id="nav-invest-btn" class="glass-card px-6 py-2 text-sm font-medium rounded-full hover:bg-white hover:text-black transition-colors border-white/20 cursor-pointer">
-            Invest
-        </button>
+       <button id="nav-contact-btn" class="glass-card px-6 py-2 text-sm font-medium rounded-full hover:bg-white hover:text-black transition-colors border-white/20 cursor-pointer">
+    Contact Founder
+</button>
     </nav>
 
     <main>
@@ -412,43 +412,8 @@
         </section>
     </main>
 
-    <!-- Invest Modal -->
-    <div id="invest-modal-overlay" class="invest-modal-overlay">
-        <div id="invest-modal-content" class="invest-modal-content">
-            <div class="w-full flex justify-center mb-6 relative">
-                <!-- Neon back glow -->
-                <div class="absolute inset-0 bg-brand-neon rounded-full filter blur-[60px] opacity-20"></div>
-                <!-- QR Image Placeholder -->
-                <img src="assets/qr.jpeg" alt="UPI QR Code" class="w-48 h-48 object-cover rounded-2xl border border-white/10 shadow-lg relative z-10 bg-white p-2">
-            </div>
-            
-            <h3 class="text-2xl font-bold text-white mb-2 tracking-tight">Invest in Our Startup</h3>
-            <p class="text-gray-400 text-sm mb-6">Thank you for believing in our vision.</p>
-            
-            <div class="bg-black/50 border border-white/5 rounded-xl p-3 mb-8 flex items-center justify-between font-mono text-sm">
-                <span class="text-gray-300">sakshamrastogi4002@oksbi</span>
-                <button id="copy-upi-btn" class="text-brand-neon hover:text-white transition-colors p-2 flex items-center gap-1 cursor-pointer" title="Copy UPI ID">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                </button>
-            </div>
-            
-            <div class="flex flex-col gap-3">
-                <a href="upi://pay?pa=sakshamrastogi4002@oksbi&pn=Saksham&cu=INR" class="w-full bg-brand-neon text-black py-3 rounded-full font-bold hover:bg-white transition-colors flex items-center justify-center gap-2">
-                    Open UPI App
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                </a>
-                <button id="close-modal-btn" class="w-full bg-transparent border border-white/20 text-white py-3 rounded-full font-medium hover:bg-white/5 transition-colors cursor-pointer">
-                    Close
-                </button>
-            </div>
-        </div>
-    </div>
+    
 
-    <!-- Success Toast Notification -->
-    <div id="copy-toast" class="success-toast shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-        UPI ID Copied Successfully
-    </div>
 
     <script>
         // --- 1. GSAP Scroll Animations ---
@@ -605,98 +570,37 @@
         }
         animate();
 
-        // --- 5. Invest Modal & WhatsApp Routing Logic ---
-        const modalOverlay = document.getElementById('invest-modal-overlay');
-        const modalContent = document.getElementById('invest-modal-content');
-        const navInvestBtn = document.getElementById('nav-invest-btn');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const copyUpiBtn = document.getElementById('copy-upi-btn');
-        const copyToast = document.getElementById('copy-toast');
-        const contactFounderBtn = document.getElementById('contact-founder-btn');
+// --- Contact Founder (WhatsApp) ---
 
-        let isModalOpen = false;
+const navContactBtn = document.getElementById("nav-contact-btn");
+const contactFounderBtn = document.getElementById("contact-founder-btn");
 
-        // Modal Open Animation (Scale + Elastic + Fade)
-        const openModal = () => {
-            isModalOpen = true;
-            document.body.classList.add('body-no-scroll');
-            modalOverlay.style.display = 'flex';
-            
-            gsap.to(modalOverlay, { duration: 0.3, opacity: 1, ease: "power2.out" });
-            gsap.to(modalContent, { 
-                duration: 0.6, 
-                opacity: 1, 
-                scale: 1, 
-                y: 0, 
-                ease: "elastic.out(1, 0.75)" 
-            });
-        };
+function contactFounder(e) {
+    if (e) e.preventDefault();
 
-        // Modal Close Animation (Slide + Fade reverse)
-        const closeModal = () => {
-            if (!isModalOpen) return;
-            isModalOpen = false;
-            
-            gsap.to(modalContent, { 
-                duration: 0.3, 
-                opacity: 0, 
-                scale: 0.9, 
-                y: 20, 
-                ease: "power2.in" 
-            });
-            gsap.to(modalOverlay, { 
-                duration: 0.3, 
-                opacity: 0, 
-                ease: "power2.in",
-                onComplete: () => {
-                    modalOverlay.style.display = 'none';
-                    document.body.classList.remove('body-no-scroll');
-                }
-            });
-        };
+    const phoneNumber = "917524987824";
 
-        navInvestBtn?.addEventListener('click', (e) => {
-            e.preventDefault();
-            openModal();
-        });
+    const message = `Hello Saksham,
 
-        closeModalBtn?.addEventListener('click', closeModal);
+I visited your Databox website.
 
-        // Close on clicking outside the modal
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) closeModal();
-        });
+I would like to discuss:
+• Investment Opportunity
+• Partnership
+• Business Collaboration
 
-        // Close on hitting ESC key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && isModalOpen) closeModal();
-        });
+Please let me know a convenient time.
 
-        // Copy UPI Logic & Interactive GSAP Toast
-        let toastTimeout;
-        copyUpiBtn?.addEventListener('click', () => {
-            navigator.clipboard.writeText('sakshamrastogi4002@oksbi').then(() => {
-                // Animate toast sliding in
-                gsap.to(copyToast, { duration: 0.5, x: 0, opacity: 1, ease: "back.out(1.5)" });
-                
-                clearTimeout(toastTimeout);
-                toastTimeout = setTimeout(() => {
-                    // Auto disappear sliding out after 3 seconds
-                    gsap.to(copyToast, { duration: 0.4, x: '150%', opacity: 0, ease: "power2.in" });
-                }, 3000);
-            });
-        });
+Thank you.`;
 
-        // WhatsApp Routing Engine
-        contactFounderBtn?.addEventListener('click', (e) => {
-            e.preventDefault();
-            const phoneNumber = "917524987824";
-            const message = `Hello Saksham,\n\nI visited your Investor Presentation.\n\nI'm interested in learning more about your startup.\n\nI would like to discuss:\n• Investment Opportunity\n• Partnership\n• Business Collaboration\n\nPlease let me know a convenient time.\n\nThank you.`;
-            
-            // wa.me routing automatically detects devices and uses native App if present, fallback to Web otherwise
-            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-        });
-    </script>
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+    window.open(whatsappUrl, "_blank");
+}
+
+navContactBtn?.addEventListener("click", contactFounder);
+contactFounderBtn?.addEventListener("click", contactFounder);
+
+</script>
 </body>
 </html>
